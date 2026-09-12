@@ -5,17 +5,37 @@ import org.testng.annotations.Test;
 public class TestNG extends BaseTest {
 
     @BeforeMethod
-    private static void beforeTest(){
+    public void beforeTest(){
 
     }
 
-    @Test
-    private static void test(){
+    @Test //TC01
+    public void homePageSmokeTest(){
+
+    }
+
+    @Test //TC02
+    public void productSelectionTest(){
+
+    }
+
+    @Test //TC03
+    public void addToCardTest(){
+
+    }
+
+    @Test //TC04
+    public void cardManagementTest(){
+
+    }
+
+    @Test //TC05
+    public void checkoutValidationTest(){
 
     }
 
     @AfterMethod(alwaysRun = true)
-    private static void afterTest(){
+    public void afterTest(){
 
     }
 }
