@@ -9,8 +9,9 @@ public class BaseTest {
     protected static WebDriverWait driverWait;
 
     protected static void setup(){}
+    protected static void setup(String pageUrl){}
     protected static void setup(WebDriver customDriver){}
-    protected static void getPage(String url){}
+    protected static void setup(WebDriver customDriver, String pageUrl){}
     protected static void cleanup(){}
     protected static WebDriverWait getWebDriverWait(){
         return null;
