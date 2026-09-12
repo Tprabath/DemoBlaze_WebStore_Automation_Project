@@ -1,2 +1,2 @@
-public class TestNG {
+public class TestNG extends BaseTest {
 }
