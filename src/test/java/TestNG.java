@@ -6,7 +6,11 @@ public class TestNG extends BaseTest {
 
     @BeforeMethod
     public void beforeTest(){
-
+        /*
+         *  setup() - start browser as normal window
+         *  setup(true) - start browser with maximize window
+         */
+        setup(true);
     }
 
     @Test //TC01
@@ -36,6 +40,6 @@ public class TestNG extends BaseTest {
 
     @AfterMethod(alwaysRun = true)
     public void afterTest(){
-
+        cleanup();
     }
 }

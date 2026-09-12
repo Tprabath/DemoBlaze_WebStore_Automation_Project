@@ -16,15 +16,30 @@ public class BaseTest {
     }
 
     protected static void setup(){
-        setup(DEFAULT_BASE_URL);
+        setup(false);
     }
-    protected static void setup(String url){
-        setup(new ChromeDriver(), url);
+
+    protected static void setup(boolean maximizeBrowser){
+        setup(DEFAULT_BASE_URL, maximizeBrowser);
+    }
+
+    protected static void setup(
+            String url, boolean maximizeBrowser){
+        setup(new ChromeDriver(), url, maximizeBrowser);
     }
     protected static void setup(WebDriver customDriver){
-        setup(customDriver, DEFAULT_BASE_URL);
+        setup(customDriver,false);
     }
-    protected static void setup(WebDriver customDriver, String pageUrl){
+    protected static void setup(
+            WebDriver customDriver,
+            boolean maximizeBrowser){
+        setup(customDriver, DEFAULT_BASE_URL, maximizeBrowser);
+    }
+    protected static void setup(
+            WebDriver customDriver,
+            String pageUrl,
+            boolean maximizeBrowser){
+
         if(!isWebDriverAvailable()){
             driver = customDriver;
         }
@@ -35,7 +50,15 @@ public class BaseTest {
                     java.time.Duration.ofSeconds(WEB_DRIVER_WAIT_TIMEOUT));
         }
 
-        driver.get(pageUrl);
+        try {
+            if(maximizeBrowser){
+                driver.manage().window().maximize();
+            }
+
+            driver.get(pageUrl);
+        }catch (RuntimeException e){
+            log(e.getMessage());
+        }
     }
 
     protected static void cleanup(){
@@ -55,5 +78,9 @@ public class BaseTest {
     }
     private static boolean isObjectAvailable(Object o){
         return o != null;
+    }
+
+    protected static void log(String message){
+        System.out.println(message);
     }
 }
