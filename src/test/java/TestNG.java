@@ -6,21 +6,34 @@ import java.util.HashMap;
 
 public class TestNG extends BaseTest {
 
-    private static final HashMap<String,String> WEB_ELEMENT_LOCATORS = new HashMap<>();
-    private static final HashMap<String,Object> EXAMPLE_CHECKOUT_DATA = new HashMap<>();
+    private enum HASHMAP_KEYS {
+        // web element locators keys
+
+
+        // checkout data keys
+        CHECKOUT_DATA_NAME,
+        CHECKOUT_DATA_COUNTRY,
+        CHECKOUT_DATA_CITY,
+        CHECKOUT_DATA_CREDIT_CARD_NO,
+        CHECKOUT_DATA_MONTH,
+        CHECKOUT_DATA_YEAR;
+    }
+
+
+    private static final HashMap<HASHMAP_KEYS,String> WEB_ELEMENT_LOCATORS = new HashMap<>();
+    private static final HashMap<HASHMAP_KEYS,Object> EXAMPLE_CHECKOUT_DATA = new HashMap<>();
 
     static {
-
         //init web element locators
 
 
         // init example checkout data
-        EXAMPLE_CHECKOUT_DATA.put("name", "Test Student");
-        EXAMPLE_CHECKOUT_DATA.put("country", "Sri Lanka");
-        EXAMPLE_CHECKOUT_DATA.put("city","Colombo");
-        EXAMPLE_CHECKOUT_DATA.put("credit_card","4111111111111111");
-        EXAMPLE_CHECKOUT_DATA.put("month", 12);
-        EXAMPLE_CHECKOUT_DATA.put("year", 2027);
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_NAME,"Test Student");
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_COUNTRY, "Sri Lanka");
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_CITY, "Colombo");
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO, "4111111111111111");
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_MONTH, 12);
+        EXAMPLE_CHECKOUT_DATA.put(HASHMAP_KEYS.CHECKOUT_DATA_YEAR, 2027);
     }
 
     @BeforeMethod
