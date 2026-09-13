@@ -50,22 +50,22 @@ public class TestNG extends BaseTest {
 
     }
 
-    @Test //TC02
+    @Test(enabled = false) //TC02
     public void productSelectionTest(){
 
     }
 
-    @Test //TC03
+    @Test(enabled = false) //TC03
     public void addToCardTest(){
 
     }
 
-    @Test //TC04
+    @Test(enabled = false) //TC04
     public void cardManagementTest(){
 
     }
 
-    @Test //TC05
+    @Test(enabled = false) //TC05
     public void checkoutValidationTest(){
 
     }
