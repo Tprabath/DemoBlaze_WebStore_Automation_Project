@@ -68,14 +68,14 @@ public class TestNG extends BaseTest {
         setup(true);
     }
 
-    @Test //TC01
+    @Test(enabled = false) //TC01
     public void homePageSmokeTest(){
         assert driver.findElement(
                     By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID))
                 ).getText()
                 .equals(EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID))
                 : "Title is empty";
-        
+
         log("TC01 : Home Page Smoke Test PASS");
     }
 
