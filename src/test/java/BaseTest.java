@@ -1,6 +1,12 @@
+import org.openqa.selenium.By;
+import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.util.List;
 
 public class BaseTest {
     private static final int WEB_DRIVER_WAIT_TIMEOUT;
@@ -70,6 +76,26 @@ public class BaseTest {
        driverWait = null;
     }
 
+    protected static WebElement findElement(SearchContext sc, By by){
+        return sc.findElement(by);
+    }
+
+    protected static List<WebElement> findElements(SearchContext sc, By by){
+        return sc.findElements(by);
+    }
+
+    protected static WebElement waitUntilVisibilityOfElementLocated(By by){
+        return driverWait.until(
+                ExpectedConditions.visibilityOfElementLocated(by)
+        );
+    }
+
+    protected static WebElement waitUntilElementToBeClickable(By by){
+        return driverWait.until(
+                ExpectedConditions.elementToBeClickable(by)
+        );
+    }
+
     private static boolean isWebDriverAvailable(){
         return isObjectAvailable(driver);
     }
@@ -80,7 +106,7 @@ public class BaseTest {
         return o != null;
     }
 
-    protected static void log(String message){
+    protected static void log(Object message){
         System.out.println(message);
     }
 }
