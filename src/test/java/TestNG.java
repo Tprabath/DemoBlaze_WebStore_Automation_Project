@@ -10,7 +10,8 @@ import java.util.List;
 public class TestNG extends BaseTest {
 
     private boolean product_selection_test_pass,
-            addToCard_test_Pass = false;
+            addToCard_test_Pass,
+            cartManagemnet_test_pass = false;
 
     private enum WEB_ELEMENT_LOCATOR_KEYS {
         // web element locators keys
@@ -25,6 +26,7 @@ public class TestNG extends BaseTest {
 
         SINGLE_PRODUCT_DETAIL,
         SINGLE_PRODUCT_TITLE,
+        SINGLE_PRODUCT_TITLE_02,
         SINGLE_PRODUCT_PRICE,
         SINGLE_PRODUCT_BTN_ADD_TO_CARD,
         SINGLE_PRODUCT_ADD_TO_CART_SUCCESS
@@ -71,7 +73,7 @@ public class TestNG extends BaseTest {
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK,
                 "//div[@class='card-block']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE,
-                "//div[@class='card-block']/h4[@class='card-title']/a[@class='hrefch']");
+                "//h4[@class='card-title']/a[@class='hrefch']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_DETAIL,
                 "//div[@class='product-content product-wrap clearfix product-deatil']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE,
@@ -83,9 +85,11 @@ public class TestNG extends BaseTest {
 
         //init expected values
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID,"PRODUCT STORE");
-        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY,"Phones");
+        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE,"Phones");
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE,
                 "Samsung galaxy s6");
+        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE_02,
+                "Nokia lumia 1520");
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS,
                 "Product added");
 
@@ -104,7 +108,7 @@ public class TestNG extends BaseTest {
          *  setup() - start browser as normal window
          *  setup(true) - start browser with maximize window
          */
-        setup(true);
+        setup();
     }
 
     @Test(enabled = false) //TC01
@@ -123,7 +127,7 @@ public class TestNG extends BaseTest {
         try {
             // Open Phones
             WebElement item_card = findCardItem(
-                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
                     EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
             );
 
@@ -169,51 +173,86 @@ public class TestNG extends BaseTest {
         log("TC02 : Product Selection PASS");
     }
 
-    @Test(enabled = true) //TC03
+    @Test(enabled = false) //TC03
     public void addToCardTest(){
-        WebElement item_card = findCardItem(
-                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
-                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
-        );
+        try {
+            boolean isCardClick = clickCard(
+                    findCardTitle(findCardItem(
+                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
+                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
+                    )),
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE));
 
-        if(clickCard(findCardTitle(item_card),
-                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))){
+            if(isCardClick){
+                    driverWait.until(
+                            ExpectedConditions.elementToBeClickable(
+                                    By.xpath(
+                                            WEB_ELEMENT_LOCATORS.get(
+                                                    WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD
+                                            )
+                                    ))).click();
 
-            try {
-                driverWait.until(
-                        ExpectedConditions.elementToBeClickable(
-                                By.xpath(
-                                        WEB_ELEMENT_LOCATORS.get(
-                                                WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD
-                                        )
-                                ))).click();
+                    Alert alert = driverWait.until(
+                            ExpectedConditions.alertIsPresent()
+                    );
 
-                Alert alert = driverWait.until(
-                        ExpectedConditions.alertIsPresent()
-                );
+                    String alert_text = alert.getText();
+                    log("Alert Text : " + alert_text);
+                    alert.accept();
 
-                String alert_text = alert.getText();
-                log("Alert Text : " + alert_text);
-                alert.accept();
+                    addToCard_test_Pass = !alert_text.isEmpty() && alert_text.equals(
+                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS));
 
-                addToCard_test_Pass = !alert_text.isEmpty() && alert_text.equals(
-                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS));
-
-            }catch (TimeoutException te){
-                log("Operation Timeout");
-            }catch (Exception e){
-                log(e.getMessage());
             }
-        }
 
+        }catch (TimeoutException te){
+            log("Operation Timeout");
+        }catch (Exception e){
+            log(e.getMessage());
+        }
         assert addToCard_test_Pass : "TC03 Test failed";
         log("TC03 : Add to Card Test PASS");
 
     }
 
-    @Test(enabled = false) //TC04
+    @Test(enabled = true) //TC04
     public void cardManagementTest(){
+        String product_01 = EXPECTED_VALUES.get(
+                WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE);
+        String product_02 = EXPECTED_VALUES.get(
+                WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE_02);
 
+        try {
+            boolean is_product_01_click = clickCard(
+                    findCardTitle(findCardItem(
+                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
+                            product_01
+                    )),product_01);
+
+            if(is_product_01_click){
+                driver.navigate().back();
+            }
+
+            log(findCardTitle(findCardItem(
+                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
+                            product_02
+                    )).getText());
+
+//            boolean is_product_02_click = clickCard(
+//                    findCardTitle(findCardItem(
+//                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
+//                            product_02
+//                    )),product_02);
+
+//            log("Product 01 Clicked : " + is_product_01_click);
+//            log("Product 02 Clicked : " + is_product_02_click);
+
+        }catch (Exception e){
+            log(e.getMessage());
+        }
+
+        assert cartManagemnet_test_pass : "TC04 Test failed";
+        log("TC03 : Add to Card Test PASS");
     }
 
     @Test(enabled = false) //TC05
@@ -237,10 +276,12 @@ public class TestNG extends BaseTest {
                 WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE)
         ));
 
+        log("Expected Category : " + expected_category);
         for (WebElement element : categorie_types) {
             if (element.getText()
                     .equals(expected_category)) {
                 element.click();
+                log(expected_category + " found");
                 break;
             }
         }
@@ -256,17 +297,18 @@ public class TestNG extends BaseTest {
                 ))
         );
 
+        log("Expected item : " + itemName);
         for(WebElement item_card : item_container_item_cards){
-
-            WebElement card_title = findElement(item_card,  By.xpath(
-                    WEB_ELEMENT_LOCATORS.get(
-                            WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK)
-            )).findElement(By.xpath(
+            locateElement(item_card);
+            WebElement card_title = item_card.findElement(By.xpath(
                     WEB_ELEMENT_LOCATORS.get(
                             WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
             ));
 
-            if(card_title.getText().equals(itemName)){
+            String title_text = card_title.getText();
+            log(title_text);
+            if(title_text.equals(itemName)){
+                log(title_text + " found");
                 foundCardElement = item_card;
                 break;
             }
@@ -276,17 +318,33 @@ public class TestNG extends BaseTest {
 }
 
     private WebElement findCardTitle(WebElement item_card){
+        if(!isObjectAvailable(item_card)){return null;}
+        By by_title_xpath = By.xpath(
+                WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
+        );
+
+        //wait until title clickable
+//        waitUntilElementToBeClickable(by_title_xpath);
+
         return findElement(item_card,  By.xpath(
                 WEB_ELEMENT_LOCATORS.get(
                         WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK)
-        )).findElement(By.xpath(
-                WEB_ELEMENT_LOCATORS.get(
-                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
-        ));
+        )).findElement(by_title_xpath);
     }
-    private boolean clickCard(WebElement card,String card_title){
-        boolean cardMatch = card.getText().equals(card_title);
-        if(cardMatch) card.click();
+    private boolean clickCard(WebElement card, String expected_card_title){
+        if(!isObjectAvailable(card)) return false;
+
+        WebElement cardTitle = findCardTitle(card);
+        if(!isObjectAvailable(cardTitle)) return false;
+
+        boolean cardMatch = cardTitle.getText().equals(expected_card_title);
+        if(cardMatch) {
+            card.click();
+        }else {
+            throw new NoSuchElementException("Card Not Found : " + expected_card_title);
+        }
+
         return cardMatch;
     }
 }

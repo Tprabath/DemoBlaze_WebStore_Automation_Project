@@ -1,7 +1,4 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.SearchContext;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -14,6 +11,7 @@ public class BaseTest {
 
     protected static WebDriver driver;
     protected static WebDriverWait driverWait;
+    protected static JavascriptExecutor javascriptExecutor;
 
     // initialize static variables
     static {
@@ -48,6 +46,7 @@ public class BaseTest {
 
         if(!isWebDriverAvailable()){
             driver = customDriver;
+            javascriptExecutor = (JavascriptExecutor) driver;
         }
 
         if(!isWebDriverWaitAvailable() && isWebDriverAvailable()){
@@ -79,11 +78,19 @@ public class BaseTest {
     protected static WebElement findElement(SearchContext sc, By by){
         return sc.findElement(by);
     }
-
     protected static List<WebElement> findElements(SearchContext sc, By by){
         return sc.findElements(by);
     }
 
+    protected static WebElement findElementByText(String text){
+        return driver.findElement(By.xpath("//*[normalize-space()='%s']".formatted(text)));
+    }
+    protected static void locateElement(WebElement element){
+        log("Locating Element : " + element);
+        javascriptExecutor.executeScript(
+                "arguments[0].scrollIntoView({block:'center'});",
+                element);
+    }
     protected static WebElement waitUntilVisibilityOfElementLocated(By by){
         return driverWait.until(
                 ExpectedConditions.visibilityOfElementLocated(by)
@@ -107,6 +114,6 @@ public class BaseTest {
     }
 
     protected static void log(Object message){
-        System.out.println(message);
+        System.out.println("[LOG] " + message);
     }
 }
