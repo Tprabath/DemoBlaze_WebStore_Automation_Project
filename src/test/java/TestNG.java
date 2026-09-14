@@ -1,6 +1,5 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -9,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TestNG extends BaseTest {
+
+    private boolean product_selection_test_pass,
+            addToCard_test_Pass = false;
 
     private enum WEB_ELEMENT_LOCATOR_KEYS {
         // web element locators keys
@@ -24,6 +26,8 @@ public class TestNG extends BaseTest {
         SINGLE_PRODUCT_DETAIL,
         SINGLE_PRODUCT_TITLE,
         SINGLE_PRODUCT_PRICE,
+        SINGLE_PRODUCT_BTN_ADD_TO_CARD,
+        SINGLE_PRODUCT_ADD_TO_CART_SUCCESS
     }
 
     private enum CHECKOUT_DATA_KEYS {
@@ -74,12 +78,16 @@ public class TestNG extends BaseTest {
                 "//h2[@class='name']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_PRICE,
                 "//h3[@class='price-container']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD,
+                "//a[normalize-space()='Add to cart']");
 
         //init expected values
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID,"PRODUCT STORE");
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY,"Phones");
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE,
                 "Samsung galaxy s6");
+        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS,
+                "Product added");
 
         // init example checkout data
         EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME,"Test Student");
@@ -112,7 +120,6 @@ public class TestNG extends BaseTest {
 
     @Test(enabled = false) //TC02
     public void productSelectionTest(){
-        boolean test_pass = false;
         try {
             // Open Phones
             WebElement item_card = findCardItem(
@@ -139,7 +146,7 @@ public class TestNG extends BaseTest {
                 ).getText();
 
                 // Verify Heading
-                test_pass = single_product_title.equals(
+                product_selection_test_pass = single_product_title.equals(
                         EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
                 );
 
@@ -158,26 +165,49 @@ public class TestNG extends BaseTest {
             log(e.getMessage());
         }
 
-        assert test_pass : "TC02 Test failed";
+        assert product_selection_test_pass : "TC02 Test failed";
         log("TC02 : Product Selection PASS");
     }
 
     @Test(enabled = true) //TC03
     public void addToCardTest(){
-        boolean addToCardPass = false;
         WebElement item_card = findCardItem(
                 EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
                 EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
         );
 
-//        if(clickCard(findCardTitle(item_card),
-//                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))){
-//            log("OK");
-//            addToCardPass = true;
-//        }
-//
-//        assert addToCardPass : "TC03 Test failed";
-//        log("TC03 : Add to Card Test PASS");
+        if(clickCard(findCardTitle(item_card),
+                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))){
+
+            try {
+                driverWait.until(
+                        ExpectedConditions.elementToBeClickable(
+                                By.xpath(
+                                        WEB_ELEMENT_LOCATORS.get(
+                                                WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD
+                                        )
+                                ))).click();
+
+                Alert alert = driverWait.until(
+                        ExpectedConditions.alertIsPresent()
+                );
+
+                String alert_text = alert.getText();
+                log("Alert Text : " + alert_text);
+                alert.accept();
+
+                addToCard_test_Pass = !alert_text.isEmpty() && alert_text.equals(
+                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS));
+
+            }catch (TimeoutException te){
+                log("Operation Timeout");
+            }catch (Exception e){
+                log(e.getMessage());
+            }
+        }
+
+        assert addToCard_test_Pass : "TC03 Test failed";
+        log("TC03 : Add to Card Test PASS");
 
     }
 

@@ -102,7 +102,7 @@ public class BaseTest {
     private static boolean isWebDriverWaitAvailable(){
         return isObjectAvailable(driverWait);
     }
-    private static boolean isObjectAvailable(Object o){
+    protected static boolean isObjectAvailable(Object o){
         return o != null;
     }
 
