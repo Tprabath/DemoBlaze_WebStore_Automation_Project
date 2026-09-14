@@ -33,7 +33,7 @@ public class TestNG extends BaseTest {
         CHECKOUT_DATA_CITY,
         CHECKOUT_DATA_CREDIT_CARD_NO,
         CHECKOUT_DATA_MONTH,
-        CHECKOUT_DATA_YEAR;
+        CHECKOUT_DATA_YEAR
     }
 
 
@@ -115,85 +115,46 @@ public class TestNG extends BaseTest {
         boolean test_pass = false;
         try {
             // Open Phones
-            List<WebElement> categorie_types = findElement(driver,By.xpath(
-                    // first, find category div
-                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY)
-            )).findElements(By.xpath(
-                    // second, find all category types
-                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE)
-            ));
-
-            String expected_category = EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY);
-            for (WebElement element : categorie_types) {
-                if (element.getText()
-                        .equals(expected_category)) {
-                    element.click();
-//                    log("Clicked : " + expected_category);
-                    break;
-                }
-            }
-
-            List<WebElement> item_container_item_cards = waitUntilVisibilityOfElementLocated(
-                    // first, find item container and wait until container's elements
-                    By.xpath(WEB_ELEMENT_LOCATORS.get(
-                            WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER
-                    ))).findElements(
-                    // second, find every cards in container
-                    By.xpath(WEB_ELEMENT_LOCATORS.get(
-                            WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD
-                    ))
+            WebElement item_card = findCardItem(
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
             );
 
-            for(WebElement item_card : item_container_item_cards){
+            if (clickCard(findCardTitle(item_card),
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))) {
+                WebElement single_product_detail = waitUntilVisibilityOfElementLocated(
+                        By.xpath(
+                                WEB_ELEMENT_LOCATORS.get(
+                                        WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_DETAIL
+                                )
+                        )
+                );
 
-                WebElement card_title = findElement(item_card,  By.xpath(
+                String single_product_title = waitUntilVisibilityOfElementLocated(
+                        By.xpath(
+                                WEB_ELEMENT_LOCATORS.get(
+                                        WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE
+                                )
+                        )
+                ).getText();
+
+                // Verify Heading
+                test_pass = single_product_title.equals(
+                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
+                );
+
+                // print price
+                log("Price : " + single_product_detail.findElement(By.xpath(
                         WEB_ELEMENT_LOCATORS.get(
-                                WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK)
-                )).findElement(By.xpath(
-                        WEB_ELEMENT_LOCATORS.get(
-                                WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
-                ));
-
-                if(card_title.getText().equals(
-                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))){
-                    card_title.click();
-
-                    WebElement single_product_detail = waitUntilVisibilityOfElementLocated(
-                            By.xpath(
-                                    WEB_ELEMENT_LOCATORS.get(
-                                            WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_DETAIL
-                                    )
-                            )
-                    );
-
-                    String single_product_title = waitUntilVisibilityOfElementLocated(
-                            By.xpath(
-                                    WEB_ELEMENT_LOCATORS.get(
-                                            WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE
-                                    )
-                            )
-                    ).getText();
-
-                    // Verify Heading
-                    test_pass = single_product_title.equals(
-                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
-                    );
-
-                    // print price
-                    log("Price : " + single_product_detail.findElement(By.xpath(
-                            WEB_ELEMENT_LOCATORS.get(
-                                    WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_PRICE
-                            ))).getText()
-                    );
-
-                    break;
-                }
+                                WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_PRICE
+                        ))).getText()
+                );
             }
 
-        }catch (NoSuchElementException e){
-            log("No Element found : " + e.getMessage() );
+        } catch (NoSuchElementException e) {
+            log("No Element found : " + e.getMessage());
 
-        }catch (Exception e){
+        } catch (Exception e) {
             log(e.getMessage());
         }
 
@@ -201,8 +162,22 @@ public class TestNG extends BaseTest {
         log("TC02 : Product Selection PASS");
     }
 
-    @Test(enabled = false) //TC03
+    @Test(enabled = true) //TC03
     public void addToCardTest(){
+        boolean addToCardPass = false;
+        WebElement item_card = findCardItem(
+                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY),
+                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
+        );
+
+//        if(clickCard(findCardTitle(item_card),
+//                EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE))){
+//            log("OK");
+//            addToCardPass = true;
+//        }
+//
+//        assert addToCardPass : "TC03 Test failed";
+//        log("TC03 : Add to Card Test PASS");
 
     }
 
@@ -219,5 +194,69 @@ public class TestNG extends BaseTest {
     @AfterMethod(alwaysRun = true)
     public void afterTest(){
         cleanup();
+    }
+
+    private WebElement findCardItem(String expected_category,
+                                    String itemName){
+        WebElement foundCardElement = null;
+        List<WebElement> categorie_types = findElement(driver,By.xpath(
+                // first, find category div
+                WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY)
+        )).findElements(By.xpath(
+                // second, find all category types
+                WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE)
+        ));
+
+        for (WebElement element : categorie_types) {
+            if (element.getText()
+                    .equals(expected_category)) {
+                element.click();
+                break;
+            }
+        }
+
+        List<WebElement> item_container_item_cards = waitUntilVisibilityOfElementLocated(
+                // first, find item container and wait until container's elements
+                By.xpath(WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER
+                ))).findElements(
+                // second, find every cards in container
+                By.xpath(WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD
+                ))
+        );
+
+        for(WebElement item_card : item_container_item_cards){
+
+            WebElement card_title = findElement(item_card,  By.xpath(
+                    WEB_ELEMENT_LOCATORS.get(
+                            WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK)
+            )).findElement(By.xpath(
+                    WEB_ELEMENT_LOCATORS.get(
+                            WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
+            ));
+
+            if(card_title.getText().equals(itemName)){
+                foundCardElement = item_card;
+                break;
+            }
+        }
+
+        return foundCardElement;
+}
+
+    private WebElement findCardTitle(WebElement item_card){
+        return findElement(item_card,  By.xpath(
+                WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK)
+        )).findElement(By.xpath(
+                WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE)
+        ));
+    }
+    private boolean clickCard(WebElement card,String card_title){
+        boolean cardMatch = card.getText().equals(card_title);
+        if(cardMatch) card.click();
+        return cardMatch;
     }
 }
