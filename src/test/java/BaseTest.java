@@ -16,7 +16,7 @@ public class BaseTest {
     // initialize static variables
     static {
         DEFAULT_BASE_URL = "https://www.demoblaze.com/";
-        WEB_DRIVER_WAIT_TIMEOUT = 5; // 5 second timeout
+        WEB_DRIVER_WAIT_TIMEOUT = 10; // 10 second timeout
     }
 
     protected static void setup(){
@@ -75,32 +75,44 @@ public class BaseTest {
        driverWait = null;
     }
 
-    protected static WebElement findElement(SearchContext sc, By by){
-        return sc.findElement(by);
-    }
-    protected static List<WebElement> findElements(SearchContext sc, By by){
-        return sc.findElements(by);
-    }
-
-    protected static WebElement findElementByText(String text){
-        return driver.findElement(By.xpath("//*[normalize-space()='%s']".formatted(text)));
-    }
-    protected static void locateElement(WebElement element){
-        log("Locating Element : " + element);
-        javascriptExecutor.executeScript(
-                "arguments[0].scrollIntoView({block:'center'});",
-                element);
+    protected static String  createXPathForFindText(String text){
+        return  createXPathForFindText("*",text);}
+    protected static String  createXPathForFindText(String tagname , String text){
+        return  "//%s[normalize-space()='%s']".formatted(tagname ,text);}
+    protected static void locateElement(SearchContext element){
+        if(element instanceof WebElement){
+            log("Locating Element : " + element);
+            javascriptExecutor.executeScript(
+                    "arguments[0].scrollIntoView({block:'center'});",
+                    element);
+        }
     }
     protected static WebElement waitUntilVisibilityOfElementLocated(By by){
         return driverWait.until(
                 ExpectedConditions.visibilityOfElementLocated(by)
         );
     }
-
     protected static WebElement waitUntilElementToBeClickable(By by){
         return driverWait.until(
                 ExpectedConditions.elementToBeClickable(by)
         );
+    }
+    protected static WebElement findElement(By by){
+        return findElements(driver,by).getFirst();
+    }
+    protected static WebElement findElement(SearchContext sc, By by){
+        return findElements(sc,by).getFirst();
+    }
+    protected static List<WebElement> findElements(By by){
+        return findElements(driver,by);
+    }
+    protected static List<WebElement> findElements(SearchContext sc, By by){
+        waitUntilVisibilityOfElementLocated(by);
+        return sc.findElements(by);
+    }
+
+    protected static WebElement findElementByText(String text){
+        return driver.findElement(By.xpath( createXPathForFindText(text)));
     }
 
     private static boolean isWebDriverAvailable(){
