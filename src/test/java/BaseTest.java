@@ -75,9 +75,9 @@ public class BaseTest {
        driverWait = null;
     }
 
-    protected static String  createXPathForFindText(String text){
-        return  createXPathForFindText("*",text);}
-    protected static String  createXPathForFindText(String tagname , String text){
+    protected static String  createXPathFindByText(String text){
+        return  createXPathFindByText("*",text);}
+    protected static String  createXPathFindByText(String tagname , String text){
         return  ".//%s[normalize-space()='%s']".formatted(tagname ,text);}
     protected static void locateElement(SearchContext element){
         if(element instanceof WebElement){
@@ -87,6 +87,19 @@ public class BaseTest {
                     element);
         }
     }
+
+    protected static boolean handleAlert(String expected_alertText){
+        return handleAlert(expected_alertText,false);
+    }
+    protected static boolean handleAlert(String expected_alertText,boolean logAlertText){
+        Alert alert = driverWait.until(ExpectedConditions.alertIsPresent());
+        String alert_text = alert.getText();
+        if(logAlertText){ log("Alert Text : " + alert_text);}
+        boolean pass = (!alert_text.isEmpty()) && alert_text.contains(expected_alertText);
+        if(pass){ alert.accept();}else {alert.dismiss();}
+        return pass;
+    }
+
     protected static WebElement waitUntilVisibilityOfElementLocated(By by){
         return driverWait.until(
                 ExpectedConditions.visibilityOfElementLocated(by)
@@ -112,7 +125,7 @@ public class BaseTest {
     }
 
     protected static WebElement findElementByText(String text){
-        return driver.findElement(By.xpath(createXPathForFindText(text)));
+        return driver.findElement(By.xpath(createXPathFindByText(text)));
     }
 
     private static boolean isWebDriverAvailable(){

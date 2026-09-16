@@ -87,9 +87,9 @@ public class TestNG extends BaseTest {
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_PRICE,
                 ".//h3[@class='price-container']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD,
-                 createXPathForFindText("a","Add to cart"));
+                 createXPathFindByText("a","Add to cart"));
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART,
-                createXPathForFindText("a","Cart"));
+                createXPathFindByText("a","Cart"));
 
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID,
                 "tbodyid");
@@ -188,7 +188,7 @@ public class TestNG extends BaseTest {
         log("TC02 : Product Selection PASS");
     }
 
-    @Test(enabled = false) //TC03
+    @Test(enabled = true) //TC03
     public void addToCardTest(){
         try {
             WebElement product_item_title =  findCardTitle(findCardItem(
@@ -210,7 +210,7 @@ public class TestNG extends BaseTest {
 
     }
 
-    @Test(enabled = true) //TC04
+    @Test(enabled = false) //TC04
     public void cardManagementTest(){
         boolean is_click_product_01,
                 is_click_product_02;
@@ -391,21 +391,9 @@ public class TestNG extends BaseTest {
             locateElement(addToCartBtn);
             boolean click = clickWebElement(addToCartBtn);
             if(click){
-                Alert alert = driverWait.until(
-                        ExpectedConditions.alertIsPresent()
-                );
-
-                String alert_text = alert.getText();
-                log("Alert Text : " + alert_text);
-
-                addToCartSuccess = !alert_text.isEmpty() && alert_text.equals(
-                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS));
-
-                if(addToCartSuccess){
-                    alert.accept();
-                }else {
-                    alert.dismiss();
-                }
+                addToCartSuccess = handleAlert(
+                        EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS),
+                        true);
             }
 
         }catch (NoSuchElementException e){
