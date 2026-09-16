@@ -11,7 +11,8 @@ public class TestNG extends BaseTest {
 
     private boolean product_selection_test_pass,
             addToCard_test_Pass,
-            cartManagemnet_test_pass;
+            cartManagemnet_test_pass,
+            checkout_validation_test_pass;
 
     private enum WEB_ELEMENT_LOCATOR_KEYS {
         // web element locators keys
@@ -35,7 +36,22 @@ public class TestNG extends BaseTest {
         CART_TABLE_BODY_ID,
         CART_TABLE_ROW,
         CART_REMOVE_ITEM,
-        CART_REMOVE_ITEM_BTN
+        CART_REMOVE_ITEM_BTN,
+        CART_PLACE_ORDER_BTN,
+        CART_PLACE_ORDER_MODEL,
+        CART_PURCHASE_MODEL_PURCHASE_BTN,
+        CART_PURCHASE_ALERT_SUCCESS ,
+        CART_PURCHASE_ALERT_INVALID,
+        CART_SWEET_ALERT,
+        CART_SWEET_ALERT_BTN_OK,
+
+        CART_PURCHASE_MODEL_INPUT_NAME,
+        CART_PURCHASE_MODEL_INPUT_COUNTRY,
+        CART_PURCHASE_MODEL_INPUT_CITY,
+        CART_PURCHASE_MODEL_INPUT_CREDIT_CARD,
+        CART_PURCHASE_MODEL_INPUT_MONTH,
+        CART_PURCHASE_MODEL_INPUT_YEAR,
+        CART_ORDER_MODEL
     }
 
     private enum CHECKOUT_DATA_KEYS {
@@ -65,7 +81,21 @@ public class TestNG extends BaseTest {
     /*
     * a map for store example checkout data
      */
-    private static final HashMap<CHECKOUT_DATA_KEYS,Object>
+
+    private static class CheckoutData {
+        Object value;
+
+        public CheckoutData(Object value){
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return String.valueOf(value);
+        }
+    }
+
+    private static final HashMap<CHECKOUT_DATA_KEYS,CheckoutData>
             EXAMPLE_CHECKOUT_DATA = new HashMap<>();
 
     static {
@@ -97,7 +127,30 @@ public class TestNG extends BaseTest {
                 ".//tr[@class='success']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM,"Nokia");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM_BTN,
-                createXPathForFindText("a","Delete"));
+                createXPathFindByText("a","Delete"));
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_BTN,
+                ".//button[@data-target='#orderModal']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_MODEL,
+                ".//div[@id='orderModal']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT,
+                ".//div[@class='sweet-alert  showSweetAlert visible']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT_BTN_OK,
+                createXPathFindByText("button","OK"));
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_NAME,
+                ".//input[@id='name']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_COUNTRY,
+                ".//input[@id='country']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CITY,
+                ".//input[@id='city']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CREDIT_CARD,
+                ".//input[@id='card']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_MONTH,
+                ".//input[@id='month']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_YEAR,
+                ".//input[@id='year']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN,
+                createXPathFindByText("button","Purchase"));
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_ORDER_MODEL,"orderModal");
 
         //init expected values
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID,"PRODUCT STORE");
@@ -108,14 +161,18 @@ public class TestNG extends BaseTest {
                 "Nokia lumia 1520");
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_ADD_TO_CART_SUCCESS,
                 "Product added");
+        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_INVALID,
+                "Please fill out Name and Creditcard.");
+        EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_SUCCESS,
+                "Thank you for your purchase!");
 
         // init example checkout data
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME,"Test Student");
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_COUNTRY, "Sri Lanka");
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CITY, "Colombo");
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO, "4111111111111111");
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_MONTH, 12);
-        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_YEAR, 2027);
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME, new CheckoutData("Test Student"));
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_COUNTRY, new CheckoutData("Sri Lanka"));
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CITY, new CheckoutData("Colombo"));
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO, new CheckoutData("4111111111111111"));
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_MONTH, new CheckoutData(12));
+        EXAMPLE_CHECKOUT_DATA.put(CHECKOUT_DATA_KEYS.CHECKOUT_DATA_YEAR, new CheckoutData(2027));
     }
 
     @BeforeMethod
@@ -188,7 +245,7 @@ public class TestNG extends BaseTest {
         log("TC02 : Product Selection PASS");
     }
 
-    @Test(enabled = true) //TC03
+    @Test(enabled = false) //TC03
     public void addToCardTest(){
         try {
             WebElement product_item_title =  findCardTitle(findCardItem(
@@ -210,7 +267,7 @@ public class TestNG extends BaseTest {
 
     }
 
-    @Test(enabled = false) //TC04
+    @Test(enabled = true) //TC04
     public void cardManagementTest(){
         boolean is_click_product_01,
                 is_click_product_02;
@@ -299,9 +356,80 @@ public class TestNG extends BaseTest {
         log("TC04 : Add to Card Test PASS");
     }
 
-    @Test(enabled = false) //TC05
+    @Test(enabled = true) //TC05
     public void checkoutValidationTest(){
+        boolean alert_invalid_test = false,
+                product_01_available = false;
 
+        List<WebElement> cart_items = getCartItems();
+        for (WebElement item : cart_items){
+            product_01_available = item.findElement(By.xpath(".//td[2]"))
+                    .getText().equals(EXPECTED_VALUES
+                    .get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE));
+            if(product_01_available){break;}
+        }
+
+        if(product_01_available){
+            clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))));
+            clickWebElement(
+                    waitUntilElementToBeClickable(
+                            By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_BTN))
+                    )
+            );
+
+            waitUntilVisibilityOfElementLocated(
+                    By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_MODEL))
+            );
+
+            if(clickWebElement(
+                    findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN))))){
+                alert_invalid_test = handleAlert(EXPECTED_VALUES.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_INVALID));
+                log("Invalid result for missing Name/Card details : " + (alert_invalid_test ?
+                        "Verified"
+                        : "Verify failed"));
+            }
+
+            // send example data
+            waitUntilVisibilityOfElementLocated(By.id(
+                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_ORDER_MODEL)
+            ));
+
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_NAME,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME);
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_COUNTRY,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_COUNTRY);
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CITY,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CITY);
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CREDIT_CARD,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO);
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_MONTH,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_MONTH);
+            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_YEAR,
+                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_YEAR);
+
+            boolean click_purchase = clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(
+                    WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN
+            ))));
+
+            WebElement sweet_alert = waitUntilVisibilityOfElementLocated(
+                    By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT))
+            );
+
+            String sweet_alert_message = findElement(sweet_alert,By.xpath(".//h2")).getText();
+            log("Alert Message : " + sweet_alert_message);
+            log(clickWebElement(findElement(sweet_alert,By.xpath(
+                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT_BTN_OK)
+            ))) ? "Alert Closed " : "Alert Can't close");
+
+            checkout_validation_test_pass = alert_invalid_test && click_purchase
+                    && (sweet_alert_message
+                    .equals(EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_SUCCESS)));
+
+        }
+
+        assert checkout_validation_test_pass : "TC05 Test failed";
+        log("TC05 :  Checkout Validation Test PASS");
     }
 
     @AfterMethod(alwaysRun = true)
@@ -310,6 +438,13 @@ public class TestNG extends BaseTest {
     }
 
 
+    private void sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS locator_key,
+                                         CHECKOUT_DATA_KEYS checkout_data_key){
+        sendKeysToElement(
+                By.xpath(WEB_ELEMENT_LOCATORS.get(locator_key)),
+                EXAMPLE_CHECKOUT_DATA.get(checkout_data_key).toString()
+        );
+    }
     private List<WebElement> getCartItems(){
         waitUntilVisibilityOfElementLocated(
                 By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)));

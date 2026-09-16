@@ -88,6 +88,9 @@ public class BaseTest {
         }
     }
 
+    protected static void sendKeysToElement(By by, CharSequence keys){
+        findElement(by).sendKeys(keys);
+    }
     protected static boolean handleAlert(String expected_alertText){
         return handleAlert(expected_alertText,false);
     }
