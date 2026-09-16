@@ -78,7 +78,7 @@ public class BaseTest {
     protected static String  createXPathForFindText(String text){
         return  createXPathForFindText("*",text);}
     protected static String  createXPathForFindText(String tagname , String text){
-        return  "//%s[normalize-space()='%s']".formatted(tagname ,text);}
+        return  ".//%s[normalize-space()='%s']".formatted(tagname ,text);}
     protected static void locateElement(SearchContext element){
         if(element instanceof WebElement){
             log("Locating Element : " + element);
@@ -112,7 +112,7 @@ public class BaseTest {
     }
 
     protected static WebElement findElementByText(String text){
-        return driver.findElement(By.xpath( createXPathForFindText(text)));
+        return driver.findElement(By.xpath(createXPathForFindText(text)));
     }
 
     private static boolean isWebDriverAvailable(){

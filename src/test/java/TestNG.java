@@ -16,6 +16,7 @@ public class TestNG extends BaseTest {
     private enum WEB_ELEMENT_LOCATOR_KEYS {
         // web element locators keys
         NAVBAR_ID,
+        NAVBAR_CART,
 
         CATEGORY,
         CATEGORY_TYPE,
@@ -29,7 +30,12 @@ public class TestNG extends BaseTest {
         SINGLE_PRODUCT_TITLE_02,
         SINGLE_PRODUCT_PRICE,
         SINGLE_PRODUCT_BTN_ADD_TO_CARD,
-        SINGLE_PRODUCT_ADD_TO_CART_SUCCESS
+        SINGLE_PRODUCT_ADD_TO_CART_SUCCESS,
+
+        CART_TABLE_BODY_ID,
+        CART_TABLE_ROW,
+        CART_REMOVE_ITEM,
+        CART_REMOVE_ITEM_BTN
     }
 
     private enum CHECKOUT_DATA_KEYS {
@@ -65,23 +71,33 @@ public class TestNG extends BaseTest {
     static {
         //init web element locators
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID,"nava");
-        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY,"//div[@class='list-group']");
-        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE,"//a[@id='itemc']");
-        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER,"//div[@id='tbodyid']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY,".//div[@class='list-group']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE,".//a[@id='itemc']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER,".//div[@id='tbodyid']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD,
-                "//div[@class='card h-100']");
+                ".//div[@class='card h-100']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_BLOCK,
-                "//div[@class='card-block']");
+                ".//div[@class='card-block']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.ITEM_CONTAINER_SINGLE_CARD_TITLE,
                 "hrefch");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_DETAIL,
-                "//div[@class='product-content product-wrap clearfix product-deatil']");
+                ".//div[@class='product-content product-wrap clearfix product-deatil']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE,
-                "//h2[@class='name']");
+                ".//h2[@class='name']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_PRICE,
-                "//h3[@class='price-container']");
+                ".//h3[@class='price-container']");
         WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_BTN_ADD_TO_CARD,
                  createXPathForFindText("a","Add to cart"));
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART,
+                createXPathForFindText("a","Cart"));
+
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID,
+                "tbodyid");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_ROW,
+                ".//tr[@class='success']");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM,"Nokia");
+        WEB_ELEMENT_LOCATORS.put(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM_BTN,
+                createXPathForFindText("a","Delete"));
 
         //init expected values
         EXPECTED_VALUES.put(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID,"PRODUCT STORE");
@@ -108,7 +124,7 @@ public class TestNG extends BaseTest {
          *  setup() - start browser as normal window
          *  setup(true) - start browser with maximize window
          */
-        setup();
+        setup(true);
     }
 
     @Test(enabled = false) //TC01
@@ -196,9 +212,7 @@ public class TestNG extends BaseTest {
 
     @Test(enabled = true) //TC04
     public void cardManagementTest(){
-        boolean is_product_01_add,
-                is_product_02_add,
-                is_click_product_01,
+        boolean is_click_product_01,
                 is_click_product_02;
 
         String product_01 = EXPECTED_VALUES.get(
@@ -207,12 +221,8 @@ public class TestNG extends BaseTest {
                 WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE_02);
 
         try {
-//            boolean is_product_01_click = clickWebElement(
-//                    findCardTitle(findCardItem(
-//                            EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
-//                            product_01
-//                    )));
 
+            // add product 01 to cart
             WebElement product_01_title =  findCardTitle(findCardItem(
                     EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
                     product_01
@@ -220,10 +230,11 @@ public class TestNG extends BaseTest {
 
             is_click_product_01 = clickWebElement(product_01_title);
             if(is_click_product_01){
-                is_product_01_add = addToCart();
+                addToCart();
                 navigateHome();
             }
 
+            // add product 02 to cart
             WebElement product_02_title =  findCardTitle(findCardItem(
                     EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
                     product_02
@@ -231,16 +242,57 @@ public class TestNG extends BaseTest {
 
             is_click_product_02 = clickWebElement(product_02_title);
             if(is_click_product_02){
-                is_product_02_add = addToCart();
+                addToCart();
                 navigateHome();
             }
 
-            cartManagemnet_test_pass =
-                    is_click_product_01 && is_click_product_02;
+            //go cart page
+            if(clickWebElement(findElement(By.xpath(
+                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))))) {
+                log("Navigate to cart page");
+
+                // get cart items
+                List<WebElement> cart_items = getCartItems();
+
+                //remove nokia
+                for(int i = 0; i < cart_items.size(); i++){
+                    WebElement element = cart_items.get(i);
+                    if(element.getText().contains(
+                            WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM))){
+                        
+                        WebElement removed_item = cart_items.remove(i);
+
+                        removed_item.findElement(By.xpath(
+                                WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_REMOVE_ITEM_BTN)
+                        )).click();
+
+                        log(removed_item.findElement(By.xpath(".//td[2]")).getText()
+                                + " Removed from cart");
+                        break;
+                    }
+                }
+
+                driverWait.until(
+                        ExpectedConditions.visibilityOfElementLocated(
+                                By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)))
+                );
+
+                driver.navigate().refresh();
+
+                //reload(reassign) cart items
+                cart_items = getCartItems();
+                String remains_need = EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE);
+                boolean isRemains = cart_items.getFirst().findElement(By.xpath(".//td[2]")).getText()
+                        .contains(remains_need);
+                if(isRemains){
+                    log(remains_need + " is remain");
+                }
+
+                cartManagemnet_test_pass = isRemains && (cart_items.size() == 1);
+            }
 
         }catch (Exception e){
-            e.printStackTrace();
-            log(e);
+            log(e.getMessage());
         }
 
         assert cartManagemnet_test_pass : "TC04 Test failed";
@@ -255,6 +307,31 @@ public class TestNG extends BaseTest {
     @AfterMethod(alwaysRun = true)
     public void afterTest(){
         cleanup();
+    }
+
+
+    private List<WebElement> getCartItems(){
+        waitUntilVisibilityOfElementLocated(
+                By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)));
+
+        //get count of cart items
+        List<WebElement> cart_items = driver.findElements(By.xpath(
+                WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_ROW)
+        ));
+
+        log("\n------ Cart Rows ------");
+
+        for (int i = 0; i < cart_items.size(); i++){
+            WebElement element = cart_items.get(i);
+            String name = element.findElement(By.xpath(".//td[2]")).getText();
+            String price = element.findElement(By.xpath(".//td[3]")).getText();
+            String action = element.findElement(By.xpath(".//td[4]")).getText();
+            log("""
+                   Index=%d, Name=%s, Price=%s, Action=%s""".formatted(i,name,price,action));
+        }
+        log(cart_items.size() + " item(s) on cart");
+
+        return cart_items;
     }
 
     private WebElement findCardItem(String expected_category,
