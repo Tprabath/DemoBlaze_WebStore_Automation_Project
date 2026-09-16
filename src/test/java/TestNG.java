@@ -246,7 +246,7 @@ public class TestNG extends BaseTest {
     }
 
     @Test //TC03
-    public void addToCardTest(){
+    public void addToCartTest(){
         try {
             WebElement product_item_title =  findCardTitle(findCardItem(
                     EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
@@ -263,7 +263,7 @@ public class TestNG extends BaseTest {
             log(e.getMessage());
         }
         assert addToCard_test_Pass : "TC03 Test failed";
-        log("TC03 : Add to Card Test PASS");
+        log("TC03 : Add to Cart Test PASS");
 
     }
 
@@ -353,7 +353,7 @@ public class TestNG extends BaseTest {
         }
 
         assert cartManagemnet_test_pass : "TC04 Test failed";
-        log("TC04 : Add to Card Test PASS");
+        log("TC04 : Cart Management Test PASS");
     }
 
     @Test //TC05
@@ -372,7 +372,7 @@ public class TestNG extends BaseTest {
                 if(product_01_available){break;}
             }
 
-            if(product_01_available){
+            if(product_01_available && (cart_items.size() == 1)){
 
                 clickWebElement(
                         waitUntilElementToBeClickable(
