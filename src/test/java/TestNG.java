@@ -361,71 +361,77 @@ public class TestNG extends BaseTest {
         boolean alert_invalid_test = false,
                 product_01_available = false;
 
-        List<WebElement> cart_items = getCartItems();
-        for (WebElement item : cart_items){
-            product_01_available = item.findElement(By.xpath(".//td[2]"))
-                    .getText().equals(EXPECTED_VALUES
-                    .get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE));
-            if(product_01_available){break;}
-        }
+        clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))));
 
-        if(product_01_available){
-            clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))));
-            clickWebElement(
-                    waitUntilElementToBeClickable(
-                            By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_BTN))
-                    )
-            );
-
-            waitUntilVisibilityOfElementLocated(
-                    By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_MODEL))
-            );
-
-            if(clickWebElement(
-                    findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN))))){
-                alert_invalid_test = handleAlert(EXPECTED_VALUES.get(
-                        WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_INVALID));
-                log("Invalid result for missing Name/Card details : " + (alert_invalid_test ?
-                        "Verified"
-                        : "Verify failed"));
+        try {
+            List<WebElement> cart_items = getCartItems();
+            for (WebElement item : cart_items){
+                product_01_available = item.findElement(By.xpath(".//td[2]"))
+                        .getText().equals(EXPECTED_VALUES
+                        .get(WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE));
+                if(product_01_available){break;}
             }
 
-            // send example data
-            waitUntilVisibilityOfElementLocated(By.id(
-                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_ORDER_MODEL)
-            ));
+            if(product_01_available){
 
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_NAME,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME);
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_COUNTRY,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_COUNTRY);
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CITY,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CITY);
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CREDIT_CARD,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO);
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_MONTH,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_MONTH);
-            sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_YEAR,
-                    CHECKOUT_DATA_KEYS.CHECKOUT_DATA_YEAR);
+                clickWebElement(
+                        waitUntilElementToBeClickable(
+                                By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_BTN))
+                        )
+                );
 
-            boolean click_purchase = clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(
-                    WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN
-            ))));
+                waitUntilVisibilityOfElementLocated(
+                        By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PLACE_ORDER_MODEL))
+                );
 
-            WebElement sweet_alert = waitUntilVisibilityOfElementLocated(
-                    By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT))
-            );
+                if(clickWebElement(
+                        findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN))))){
+                    alert_invalid_test = handleAlert(EXPECTED_VALUES.get(
+                            WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_INVALID));
+                    log("Invalid result for missing Name/Card details : " + (alert_invalid_test ?
+                            "Verified"
+                            : "Verify failed"));
+                }
 
-            String sweet_alert_message = findElement(sweet_alert,By.xpath(".//h2")).getText();
-            log("Alert Message : " + sweet_alert_message);
-            log(clickWebElement(findElement(sweet_alert,By.xpath(
-                    WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT_BTN_OK)
-            ))) ? "Alert Closed " : "Alert Can't close");
+                // send example data
+                waitUntilVisibilityOfElementLocated(By.id(
+                        WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_ORDER_MODEL)
+                ));
 
-            checkout_validation_test_pass = alert_invalid_test && click_purchase
-                    && (sweet_alert_message
-                    .equals(EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_SUCCESS)));
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_NAME,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_NAME);
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_COUNTRY,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_COUNTRY);
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CITY,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CITY);
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_CREDIT_CARD,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_CREDIT_CARD_NO);
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_MONTH,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_MONTH);
+                sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_INPUT_YEAR,
+                        CHECKOUT_DATA_KEYS.CHECKOUT_DATA_YEAR);
 
+                boolean click_purchase = clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(
+                        WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_MODEL_PURCHASE_BTN
+                ))));
+
+                WebElement sweet_alert = waitUntilVisibilityOfElementLocated(
+                        By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT))
+                );
+
+                String sweet_alert_message = findElement(sweet_alert,By.xpath(".//h2")).getText();
+                log("Alert Message : " + sweet_alert_message);
+                log(clickWebElement(findElement(sweet_alert,By.xpath(
+                        WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_SWEET_ALERT_BTN_OK)
+                ))) ? "Alert Closed " : "Alert Can't close");
+
+                checkout_validation_test_pass = alert_invalid_test && click_purchase
+                        && (sweet_alert_message
+                        .equals(EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CART_PURCHASE_ALERT_SUCCESS)));
+
+            }
+        } catch (RuntimeException e) {
+            log(e);
         }
 
         assert checkout_validation_test_pass : "TC05 Test failed";
