@@ -184,7 +184,7 @@ public class TestNG extends BaseTest {
         setup(true);
     }
 
-    @Test(enabled = false) //TC01
+    @Test //TC01
     public void homePageSmokeTest(){
         assert driver.findElement(
                     By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID))
@@ -195,7 +195,7 @@ public class TestNG extends BaseTest {
         log("TC01 : Home Page Smoke Test PASS");
     }
 
-    @Test(enabled = false) //TC02
+    @Test //TC02
     public void productSelectionTest(){
         try {
             // Open Phones
@@ -245,7 +245,7 @@ public class TestNG extends BaseTest {
         log("TC02 : Product Selection PASS");
     }
 
-    @Test(enabled = false) //TC03
+    @Test //TC03
     public void addToCardTest(){
         try {
             WebElement product_item_title =  findCardTitle(findCardItem(
@@ -267,7 +267,7 @@ public class TestNG extends BaseTest {
 
     }
 
-    @Test(enabled = true) //TC04
+    @Test //TC04
     public void cardManagementTest(){
         boolean is_click_product_01,
                 is_click_product_02;
@@ -356,7 +356,7 @@ public class TestNG extends BaseTest {
         log("TC04 : Add to Card Test PASS");
     }
 
-    @Test(enabled = true) //TC05
+    @Test //TC05
     public void checkoutValidationTest(){
         boolean alert_invalid_test = false,
                 product_01_available = false;
