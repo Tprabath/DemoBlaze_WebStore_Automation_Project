@@ -445,14 +445,14 @@ public class TestNG extends BaseTest {
     }
 
 
-    private void sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS locator_key,
+    private static void sendKeysToPurchaseModel(WEB_ELEMENT_LOCATOR_KEYS locator_key,
                                          CHECKOUT_DATA_KEYS checkout_data_key){
         sendKeysToElement(
                 By.xpath(WEB_ELEMENT_LOCATORS.get(locator_key)),
                 EXAMPLE_CHECKOUT_DATA.get(checkout_data_key).toString()
         );
     }
-    private List<WebElement> getCartItems(){
+    private static List<WebElement> getCartItems(){
         waitUntilVisibilityOfElementLocated(
                 By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)));
 
@@ -476,7 +476,7 @@ public class TestNG extends BaseTest {
         return cart_items;
     }
 
-    private WebElement findCardItem(String expected_category,
+    private static WebElement findCardItem(String expected_category,
                                     String itemName){
         WebElement foundCardElement = null;
         List<WebElement> categorie_types = findElementsFromRoot(
@@ -521,7 +521,7 @@ public class TestNG extends BaseTest {
         return foundCardElement;
 }
 
-    private boolean addToCart(){
+    private static boolean addToCart(){
         boolean addToCartSuccess = true;
         try {
             WebElement addToCartBtn = waitUntilElementToBeClickable(
@@ -545,12 +545,12 @@ public class TestNG extends BaseTest {
         return addToCartSuccess;
     }
 
-    private void navigateHome(){
+    private static void navigateHome(){
         findElement(By.id(
                 WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_ID)
         )).click();
     }
-    private WebElement findCardTitle(WebElement item_card){
+    private static WebElement findCardTitle(WebElement item_card){
         if(!isObjectAvailable(item_card)){return null;}
         return findElementFromRoot(
                 item_card,
@@ -561,7 +561,7 @@ public class TestNG extends BaseTest {
                 )
         );
     }
-    private boolean clickWebElement(WebElement element){
+    private static boolean clickWebElement(WebElement element){
         if(!isObjectAvailable(element)) return false;
         element.click();
        return true;
