@@ -73,6 +73,7 @@ public class BaseTest {
 
        driver = null;
        driverWait = null;
+       javascriptExecutor = null;
     }
 
     protected static String  createXPathFindByText(String text){
