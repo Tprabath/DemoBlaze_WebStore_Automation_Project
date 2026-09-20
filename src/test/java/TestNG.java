@@ -247,7 +247,7 @@ public class TestNG extends BaseTest {
     }
 
     @Test //TC03
-    public void addToCartTest(){
+    public void addToCartTest() {
         try {
             WebElement product_item_title =  findCardTitle(findCardItem(
                     EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
