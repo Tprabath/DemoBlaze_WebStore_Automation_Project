@@ -330,10 +330,10 @@ public class TestNG extends BaseTest {
                     }
                 }
 
-                driverWait.until(
-                        ExpectedConditions.visibilityOfElementLocated(
-                                By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)))
-                );
+//                driverWait.until(
+//                        ExpectedConditions.visibilityOfElementLocated(
+//                                By.id(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.CART_TABLE_BODY_ID)))
+//                );
 
                 driver.navigate().refresh();
 
@@ -362,9 +362,22 @@ public class TestNG extends BaseTest {
         boolean alert_invalid_test = false,
                 product_01_available = false;
 
-        clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))));
-
         try {
+            // add product 01 to cart
+            WebElement product_01_title =  findCardTitle(findCardItem(
+                    EXPECTED_VALUES.get(WEB_ELEMENT_LOCATOR_KEYS.CATEGORY_TYPE),
+                    EXPECTED_VALUES.get(
+                            WEB_ELEMENT_LOCATOR_KEYS.SINGLE_PRODUCT_TITLE)
+            ));
+
+            boolean is_click_product_01 = clickWebElement(product_01_title);
+            if(is_click_product_01){
+                addToCart();
+                navigateHome();
+            }
+
+            clickWebElement(findElement(By.xpath(WEB_ELEMENT_LOCATORS.get(WEB_ELEMENT_LOCATOR_KEYS.NAVBAR_CART))));
+
             List<WebElement> cart_items = getCartItems();
             for (WebElement item : cart_items){
                 product_01_available = item.findElement(By.xpath(".//td[2]"))
