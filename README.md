@@ -28,9 +28,7 @@ This project is a Selenium WebDriver automation framework developed for automati
 2. Maven 3 (v3.9.16) or 3.9+,
 3. Selenium v4.48.0,
 4. TestNG v7.9.0
-
-and as the IDE I used, (you can also use different IDE):
-5. IntelliJ IDEA 2026.2.1.
+5. IntelliJ IDEA v2026.2.1 or 2026.2+
 
 > ## Setup
 ### 1. Clone the Repo
