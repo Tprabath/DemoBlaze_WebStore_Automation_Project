@@ -66,6 +66,3 @@ VS Code -> file -> open folder -> select folder
 >        setup(new EdgeDriver(), true);
 > }
 > ```
-
-> [!NOTE]
->  This project is licensed under the MIT License. You are free to reuse and modify the BaseTest.java class in your own projects.
